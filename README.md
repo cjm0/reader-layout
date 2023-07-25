@@ -50,12 +50,6 @@
 
 ## 功能实现
 
-### 使用
-
-![1.png](https://pic2.zhimg.com/80/v2-a6b116167fa9a8faad7fa4dea71d6b8d_1440w.webp)
-
-### SDK 解释
-
 转换章节内容示例
 
 ```js
