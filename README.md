@@ -52,6 +52,7 @@ const list = Reader(content.cont, {
   wxMini-微信小程序
   alipayMini-支付宝小程序
   alitbMini-淘宝小程序
+  swan-百度小程序
 */
 platform: 'browser', // 平台
 /* id

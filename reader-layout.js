@@ -3,13 +3,15 @@
 
   const inBrowser = typeof window !== 'undefined'
   const baseChar = '阅' // 标准汉字
+  let _this = null
   let options = { // 参数
     /* platform
       browser-浏览器
-      quickApp-快应用
+      quickApp-快应用（需要在页面里预先创建canvas）
       wxMini-微信小程序
       alipayMini-支付宝小程序
       alitbMini-淘宝小程序
+      swan-百度小程序（需要在页面里预先创建canvas）
     */
     platform: 'browser', // 平台
     /* id
@@ -63,10 +65,11 @@
   /**
    * 把文本内容转化成特定数组输出
    * @param {string} content 章节内容
-   * @param {Object} option 参数
+   * @param {Object} option 详细参数
+   * @param {Object} context 上下文对象 this my document 等
    * @return {Array} [] 输出转化好的行数组
   */
-  function Reader(content, option) {
+  function Reader(content, option, context) {
     const { width, height, fontFamily, fontSize, title, titleSize } = option
     if (!content) {
       return '无内容'
@@ -90,6 +93,10 @@
     const rootFamily = getStyle('font-family')
     if (!fontFamily && rootFamily) {
       options.fontFamily = rootFamily
+    }
+
+    if (context) {
+      _this = context
     }
 
     const lines = splitContent2lines(content) // 把内容拆成行数组
@@ -302,6 +309,8 @@
           return my.createOffscreenCanvas()
         }
         return my.createCanvasContext(id)
+      case 'swan': // 百度小程序
+        return swan.createCanvasContext()
       default: // browser 浏览器
         return document.createElement('canvas')
     }
