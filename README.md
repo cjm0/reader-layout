@@ -1,6 +1,6 @@
-# 阅读器排版 SDK
+# 阅读器排版引擎
 
-小说阅读器排版引擎
+小说阅读器排版引擎、文字内容排版引擎
 
 支持的功能：**支持横翻、竖翻阅读，持按段、按行插入广告，支持文字两端对齐、标点符号避头**
 
@@ -14,12 +14,12 @@
 
 npm 包下载：
 
-`npm install reader`
+`npm i reader-layout`
 
 转换章节内容示例：
 
 ```js
-import Reader from 'reader'
+import Reader from 'reader-layout'
 
 const content = {
   tit: "第一章，魂穿斗罗，震撼全场",
@@ -83,7 +83,7 @@ titleWeight: 'normal', // 字重-章节标题
 titleGap: 0, // 标题和内容的间距-章节标题
 ```
 
-[详细使用文档](https://cjm0.github.io/blog/page/list/read.html)
+[点击查看详细使用文档](https://cjm0.github.io/blog/page/list/read.html)
 
 *可以直接把 js 复制出来自己修改扩展再用*
 
@@ -177,7 +177,7 @@ titleGap: 0, // 标题和内容的间距-章节标题
 
 行标签 p 设置 `display: flex;`，需要两端对齐的行加上 `justify-content: space-between;`
 
-此行文字 text.split('') 切割成数组并用 for 循环 span 标签渲染
+此行文字 `text.split('')` 切割成数组并用 for 循环 span 标签渲染
 
 ### 计算加速
 
