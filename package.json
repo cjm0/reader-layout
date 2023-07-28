@@ -1,7 +1,7 @@
 {
   "name": "reader-layout",
-  "version": "1.0.2",
-  "description": "小说阅读器排版引擎",
+  "version": "1.0.4",
+  "description": "阅读器排版引擎",
   "main": "reader-layout.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,7 +15,7 @@
     "reader-layout.js"
   ],
   "author": "前端一锅煮",
-  "license": "ISC",
+  "license": "MIT",
   "private": false,
   "bugs": {
     "url": "https://github.com/cjm0/reader/issues"
