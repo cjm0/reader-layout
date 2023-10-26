@@ -70,6 +70,8 @@ splitCode: '\r\n', // 段落分割符
   * 浏览器不需要用，快应用计算耗时较长，在 60~150ms 之间，对排版要求不那么高可考虑使用以此提高速度
 */
 fast: false,
+
+type: 'page', // page-获取页数组 line-获取行数组
 width: 0, // 容器宽度-必传
 height: 0, // 容器高度-必传
 fontFamily: 'sans-serif', // 字体
