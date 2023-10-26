@@ -178,9 +178,81 @@ titleGap: 0, // 标题和内容的间距-章节标题
 
 ### 两端对齐
 
+#### 方法1
+
 行标签 p 设置 `display: flex;`，需要两端对齐的行加上 `justify-content: space-between;`
 
 此行文字 `text.split('')` 切割成数组并用 for 循环 span 标签渲染
+
+#### 方法2
+
+页标签 `text-align: justify;`
+
+行需要对齐的标签
+
+```css
+.center::after{
+  content: '';
+  display: inline-block;
+  width: 100%;
+  height: 0;
+}
+```
+
+```html
+<template v-for="(p, idx) in item.list">
+  <h2
+    v-if="p.isTitle"
+    :key="`${index}${idx}`"
+    class="title"
+    :style="{ fontSize: titleFontSize + 'px' }"
+  >{{p.text || ''}}</h2>
+  <p
+    v-else
+    :key="`${index}${idx}`"
+    :class="['content', p.pFirst && 'indent', p.pFirst && idx !== 0 && 'graph', p.center && 'center']"
+  >{{ p.text }}</p>
+</template>
+```
+
+```css
+.page{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: justify;
+}
+.title {
+  display: block;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.8;
+  white-space: nowrap;
+  &:last-of-type{
+    margin-bottom: 62px;
+  }
+}
+.content {
+  font-size: 1em;
+  line-height: 2.2;
+}
+.indent{
+  text-indent: 2em;
+}
+.graph{
+  padding-top: 8px;
+}
+.center::after{
+  content: '';
+  display: inline-block;
+  width: 100%;
+  height: 0;
+}
+```
+
+
 
 ### 计算加速
 
