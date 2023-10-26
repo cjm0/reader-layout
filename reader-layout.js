@@ -3,7 +3,7 @@
 
   const inBrowser = typeof window !== 'undefined'
   const baseChar = '阅' // 标准汉字
-  let _this = null
+  let lineH = {}
   let options = { // 参数
     /* platform
       browser-浏览器
@@ -29,6 +29,8 @@
       * 浏览器不需要用，对于快应用、小程序等计算耗时较长的应用，如果对排版要求不那么高可考虑使用以提高速度
     */
     fast: false, // 是否计算加速
+
+    type: 'page', // page-获取页数组 line-获取行数组
     width: 0, // 容器宽度-必传
     height: 0, // 容器高度-必传
     fontFamily: 'sans-serif', // 字体
@@ -66,18 +68,17 @@
    * 把文本内容转化成特定数组输出
    * @param {string} content 章节内容
    * @param {Object} option 详细参数
-   * @param {Object} context 上下文对象 this my document 等
    * @return {Array} [] 输出转化好的行数组
   */
-  function Reader(content, option, context) {
-    const { width, height, fontFamily, fontSize, title, titleSize } = option
+  function Reader(content, option) {
+    const { type, width, height, fontFamily, fontSize, title, titleSize } = option
     if (!content) {
       return '无内容'
     }
     if (!width || Number(width) <= 0) {
       return '请传入容器宽度，值需要大于 0'
     }
-    if (!height || Number(height) <= 0) {
+    if (type === 'page' && (!height || Number(height) <= 0)) {
       return '请传入容器高度，值需要大于 0'
     }
     if (!fontSize || Number(fontSize) <= 0) {
@@ -89,19 +90,20 @@
 
     options = { ...options, ...option }
 
+    lineH = {}
+
     // 字体
     const rootFamily = getStyle('font-family')
     if (!fontFamily && rootFamily) {
       options.fontFamily = rootFamily
     }
 
-    if (context) {
-      _this = context
+    if (type === 'line') {
+      return splitContent2lines(content)
     }
 
     const lines = splitContent2lines(content) // 把内容拆成行数组
-    const pages = joinLine2Pages(lines) // 把行聚合成页数组
-    return pages
+    return joinLine2Pages(lines) // 把行聚合成页数组
   }
 
   /**
@@ -129,6 +131,10 @@
     if (!hasTitle) {
       pList.unshift(title)
     }
+    // 去除多余的标题
+    if (title && trimAll(pList[1]) === trimAll(title)) {
+      pList.splice(1, 1)
+    }
 
     // 计算1行能放多少个标准汉字
     const baseLen = Math.floor(width / fontSize)
@@ -137,7 +143,7 @@
       char += baseChar
     }
     const maxText = getText({ fontSize }, char, true)
-    // console.log(111, '一行放多少个汉字', maxText.length)
+    // console.log(333, '一行放多少个汉字', maxText.length)
 
     // 把段落拆成行
     let result = []
@@ -171,7 +177,7 @@
         lineText = baseChar + baseChar + lineText
       }
 
-      if (!isTitle && p.length <= maxLen) { // 少于行最大字数直接独立成行
+      if (!isTitle && p.length <= sliceLen) { // 少于行最大字数直接独立成行
         p = ''
       } else {
         if (!fast || isTitle) { // 计算加速
@@ -210,6 +216,7 @@
         pFirst: !isTitle && tag === 1, // 段落首行
         pIndex: index, // 段落索引
         lineIndex: tag, // 行索引
+        textIndex: pText.indexOf(lineText), // 文字在段落未分行的固定位置
         text: lineText, // 行文字内容
       })
     }
@@ -326,11 +333,11 @@
 
     // 计算1页能放多少标准行
     let maxLine = 1
-    if (lines.length > 5) {
-      const baseLineH = getLineHeight(lines[5])
+    if (lines.length >= 2) {
+      const baseLineH = getLineHeight(lines[1], 'base')
       maxLine = Math.floor(height / baseLineH)
     }
-    // console.log(222, '1页能放多少标准行', maxLine)
+    // console.log(333, '1页能放多少标准行', maxLine)
 
     let pageLines = lines.slice(0)
     let pages = []
@@ -392,8 +399,7 @@
   }
 
   // 获取1行的高度
-  const lineH = {}
-  function getLineHeight(line) {
+  function getLineHeight(line, type) {
     // 计算过的直接返回
     const index = `${line.pIndex}_${line.lineIndex}`
     let theLineH = lineH[index]
@@ -404,6 +410,12 @@
     const { pGap, fontSize, lineHeight, titleSize, titleHeight } = options
     const size = line.isTitle ? titleSize : fontSize
     const height = line.isTitle ? titleHeight : lineHeight
+
+    // 标准行计算处理
+    if (type === 'base') {
+      return fontSize * lineHeight
+    }
+
     let gap = 0
     if (!line.isTitle && line.lineIndex === 1) { // 非标题 && 首行
       gap = pGap
