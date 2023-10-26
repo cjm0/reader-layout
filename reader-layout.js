@@ -119,7 +119,7 @@
     const reg = `[${splitCode}]+`
     const pList = content.split(new RegExp(reg, 'gim'))
       .map(v => {
-        if (v === title) {
+        if (i === 0 && v === title) {
           hasTitle = true
           return v
         }
