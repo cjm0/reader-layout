@@ -1,14 +1,18 @@
 # 阅读器排版引擎
 
-小说阅读器排版引擎、文字内容排版引擎
+小说阅读器排版引擎、文字内容排版引擎。
 
-支持的功能：**支持横翻、竖翻阅读，持按段、按行插入广告，支持文字两端对齐、标点符号避头**
+功能特色：**低成本实现横竖翻阅读，支持文字两端对齐、标点符号自动避头避尾**
 
-兼容性：**兼容浏览器、小程序、快应用等各种平台**
+跨平台：**通过 js 计算实现，支持浏览器、小程序、快应用等各种平台**
 
-性能：**基本耗时 10ms 内**
+灵活插入广告：**支持按页、段、行插入广告**
 
-输入内容经过 sdk 转换后输出分好页的数组
+最小颗粒度：**可控制字符到行、段、页，最小颗粒度为单个字符**
+
+性能：**计算耗时 10ms 内**
+
+输入章节内容经过 `Reader` 方法转换后输出分好页的数组
 
 ## 快速使用
 
@@ -29,8 +33,7 @@ const list = Reader(content.cont, {
   platform: 'browser', // 平台
   id: '', // canvas 对象
   splitCode: '\r\n', // 段落分割符
-  fast: false, // 是否计算加速
-  width: 327, // 容器宽度
+  width: 320, // 容器宽度
   height: 511, // 容器高度
   fontSize: 20, // 段落字体大小
   lineHeight: 2.2, // 段落文字行高
@@ -69,7 +72,7 @@ splitCode: '\r\n', // 段落分割符
   * 按照容器宽度粗略计算固定每行字数，段落行不再通过 measureText 计算精确的字数
   * 浏览器不需要用，快应用计算耗时较长，在 60~150ms 之间，对排版要求不那么高可考虑使用以此提高速度
 */
-fast: false,
+fast: false, // 是否计算加速
 
 type: 'page', // page-获取页数组 line-获取行数组
 width: 0, // 容器宽度-必传
@@ -143,21 +146,14 @@ titleGap: 0, // 标题和内容的间距-章节标题
 ### 横翻分页
 
 1. 分段分行：
-
     - 拿到后端的章节内容，按照内容的段符号切割成段数组
-
     - 循环段数组，把每段按照容器宽度计算分成行数组，利用 `canvas measureText` 方法测量文本宽度
 
 2. 聚行成页：
-
     - 按照容器高度计算每页能放多少行
-
     - 页高度 = 标题高度 + 行高度 + 间距
-
     - 标题高度 = 字体大小 * 行高
-
     - 行高度 = 字体大小 * 行高
-
     - 间距 = 段间距 + 标题和内容的间距
 
 ### 标点符号避头
@@ -167,13 +163,9 @@ titleGap: 0, // 标题和内容的间距-章节标题
 2. 独立一行的不处理
 
 3. 非段落首行，行头是结尾类型的标点符号：
-
     - 上一行行尾是文字的，掉一个字下来，上一行两端对齐间隙扩大
-
     - 上一行行尾1~2个标点符号的，标点符号前一个文字和标点符号一起掉下来，上一行不两端对齐，文字留空
-
     - 上一行行尾3个及以上标点符号的，不做处理
-
     - 上一行只有1个文字其他都是标点符号的，不做处理
 
 ### 两端对齐
@@ -203,14 +195,17 @@ titleGap: 0, // 标题和内容的间距-章节标题
 <template v-for="(p, idx) in item.list">
   <h2
     v-if="p.isTitle"
-    :key="`${index}${idx}`"
+    :key="`${index}${idx}_t`"
     class="title"
     :style="{ fontSize: titleFontSize + 'px' }"
   >{{p.text || ''}}</h2>
   <p
     v-else
     :key="`${index}${idx}`"
-    :class="['content', p.pFirst && 'indent', p.pFirst && idx !== 0 && 'graph', p.center && 'center']"
+    :class="[p.pFirst && 'indent', p.center && 'center']"
+    :style="{
+      paddingTop: (p.pFirst && idx !== 0 ? fontSizeInitial : 0) + 'px'
+    }"
   >{{ p.text }}</p>
 </template>
 ```
@@ -219,30 +214,20 @@ titleGap: 0, // 标题和内容的间距-章节标题
 .page{
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   text-align: justify;
 }
 .title {
   display: block;
-  font-size: 20px;
+  line-height: 1.5;
   font-weight: 500;
-  line-height: 1.8;
   white-space: nowrap;
-  &:last-of-type{
-    margin-bottom: 62px;
-  }
-}
-.content {
-  font-size: 1em;
-  line-height: 2.2;
 }
 .indent{
   text-indent: 2em;
-}
-.graph{
-  padding-top: 8px;
 }
 .center::after{
   content: '';
@@ -251,8 +236,6 @@ titleGap: 0, // 标题和内容的间距-章节标题
   height: 0;
 }
 ```
-
-
 
 ### 计算加速
 
