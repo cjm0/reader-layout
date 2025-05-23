@@ -1,18 +1,25 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# /dist 基于 .gitignore 文件
+# dist 目录加文件
+# dsit/ 目录
+# * 任意字符不包含 /
+# ** 任意字符包含 /
 
-# Other files and folders
-.settings/
+# Logs
+logs
+*.log
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+.DS_Store
+node_modules
+*.local
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+*.tsbuildinfo
